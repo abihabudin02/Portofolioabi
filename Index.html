@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abi Habudin | Supply Chain & Logistics Expert</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',    // Slate 900
+                            primary: '#0c4a6e', // Sky 900
+                            accent: '#0284c7',  // Sky 600
+                            surface: '#f1f5f9', // Slate 100
+                            highlight: '#f59e0b' // Amber 500
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Logistics Grid Pattern */
+        .bg-logistics-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Modal Styles */
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-brand-surface text-slate-800 antialiased selection:bg-brand-primary selection:text-white">
+
+    <!-- Loading Screen -->
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-slate-200 rounded-full"></div>
+                <div class="absolute top-0 w-16 h-16 border-4 border-brand-primary rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <p class="mt-4 text-brand-primary font-bold tracking-widest text-xs uppercase">Loading Logistics Profile...</p>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal (Hidden by default) -->
+    <div id="project-modal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <!-- Modal Panel -->
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl opacity-0 translate-y-4" id="modal-panel">
+                    
+                    <!-- Close Button -->
+                    <button onclick="closeModal()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors shadow-sm">
+                        <i class="fas fa-times text-slate-600 text-lg"></i>
+                    </button>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2">
+                        <!-- Left: Image/Video Section -->
+                        <div class="relative h-64 md:h-auto bg-slate-200 md:min-h-[500px]">
+                            <!-- Image Element -->
+                            <img id="modal-image" src="" alt="Project Image" class="absolute inset-0 w-full h-full object-cover">
+                            
+                            <!-- Video Element (Hidden by default) -->
+                            <iframe id="modal-video" class="absolute inset-0 w-full h-full hidden" allow="autoplay; fullscreen"></iframe>
+
+                            <!-- Text Overlay (Only for Image Mode) -->
+                            <div id="modal-overlay" class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent flex items-end p-8 pointer-events-none">
+                                <div>
+                                    <span id="modal-category" class="px-3 py-1 bg-brand-accent text-white text-xs font-bold uppercase rounded-md mb-2 inline-block shadow-sm">Category</span>
+                                    <h3 id="modal-title" class="text-2xl font-bold text-white leading-tight text-shadow-sm">Project Title</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Content Section -->
+                        <div class="p-8 md:p-10 bg-white modal-content max-h-[80vh] overflow-y-auto">
+                            <div class="space-y-6">
+                                <!-- Title for Video Mode (Hidden by default) -->
+                                <div id="modal-video-title-block" class="hidden border-b border-slate-100 pb-4 mb-4">
+                                    <span id="modal-video-category" class="text-xs font-bold text-brand-accent uppercase tracking-wider">Category</span>
+                                    <h3 id="modal-video-title" class="text-2xl font-bold text-brand-dark mt-1">Project Title</h3>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-sm font-bold text-brand-primary uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">Tantangan (Challenge)</h4>
+                                    <p id="modal-challenge" class="text-slate-600 leading-relaxed text-sm">Description of the challenge goes here.</p>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-sm font-bold text-brand-primary uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">Solusi & Implementasi</h4>
+                                    <p id="modal-solution" class="text-slate-600 leading-relaxed text-sm">Description of the solution goes here.</p>
+                                </div>
+
+                                <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                                    <h4 class="text-sm font-bold text-brand-accent uppercase tracking-wider mb-3 flex items-center gap-2">
+                                        <i class="fas fa-chart-line"></i> Hasil & Dampak (Impact)
+                                    </h4>
+                                    <ul id="modal-results" class="space-y-2">
+                                        <!-- List items injected via JS -->
+                                    </ul>
+                                </div>
+
+                                <div class="pt-4 flex gap-4">
+                                    <a id="modal-link" href="#" target="_blank" class="flex-1 text-center px-6 py-3 bg-brand-primary text-white font-bold rounded-lg hover:bg-brand-dark transition-colors shadow-lg">
+                                        <i class="fas fa-external-link-alt mr-2"></i> Lihat Live / Demo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="app" class="hidden opacity-0 transition-opacity duration-1000">
+        
+        <!-- Navbar -->
+        <nav class="fixed w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-40 transition-all duration-300 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center text-white text-lg shadow-lg">
+                            <i class="fas fa-dolly"></i>
+                        </div>
+                        <div>
+                            <span id="nav-name" class="block font-bold text-lg text-brand-dark leading-none">Abi Habudin</span>
+                            <span class="text-xs text-brand-accent font-semibold tracking-wide uppercase">Logistics Expert</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#home" class="text-sm font-semibold text-slate-600 hover:text-brand-primary transition-colors">Beranda</a>
+                        <a href="#analytics" class="text-sm font-semibold text-slate-600 hover:text-brand-primary transition-colors">Analitik</a>
+                        <a href="#system-demo" class="text-sm font-semibold text-slate-600 hover:text-brand-primary transition-colors">Demo Sistem</a>
+                        <a href="#video-showcase" class="text-sm font-semibold text-slate-600 hover:text-brand-primary transition-colors">Video</a>
+                        <a href="#projects" class="text-sm font-semibold text-slate-600 hover:text-brand-primary transition-colors">Proyek</a>
+                        <a href="#contact" class="px-6 py-2.5 text-sm font-bold text-white bg-brand-primary rounded-lg hover:bg-brand-dark transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                            <i class="fas fa-paper-plane"></i> Hire Me
+                        </a>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-slate-600 hover:text-brand-primary">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white border-b absolute w-full left-0 shadow-lg">
+                <div class="px-4 py-4 space-y-3">
+                    <a href="#home" class="block text-slate-600 font-medium">Beranda</a>
+                    <a href="#analytics" class="block text-slate-600 font-medium">Analitik</a>
+                    <a href="#system-demo" class="block text-slate-600 font-medium">Demo Sistem</a>
+                    <a href="#projects" class="block text-slate-600 font-medium">Proyek</a>
+                    <a href="#contact" class="block text-brand-primary font-bold">Kontak</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home" class="pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 relative overflow-hidden bg-logistics-pattern">
+            <!-- Background Elements -->
+            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-slate-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float -z-10"></div>
+            <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float -z-10" style="animation-delay: 2s"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-left animate-slide-up relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-brand-primary uppercase bg-white border border-slate-200 rounded-full shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-brand-highlight animate-pulse"></span>
+                        Ready for Senior Management Role
+                    </div>
+                    <h1 class="text-5xl lg:text-7xl font-bold text-brand-dark mb-6 leading-tight">
+                        Strategic <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent">Logistics & Supply Chain</span>
+                        <br>Optimization
+                    </h1>
+                    <p class="text-lg text-slate-600 mb-8 max-w-xl leading-relaxed">
+                        Mengintegrasikan 14+ tahun keahlian manajemen gudang fisik dengan strategi efisiensi biaya dan teknologi ERP untuk rantai pasok yang tangguh.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#system-demo" class="px-8 py-4 bg-brand-primary text-white font-bold rounded-lg shadow-xl shadow-brand-primary/20 hover:shadow-2xl hover:bg-brand-dark transition-all transform hover:-translate-y-1 flex items-center gap-2">
+                            <i class="fas fa-laptop-code"></i> Coba Demo Sistem
+                        </a>
+                        <a href="#projects" class="px-8 py-4 bg-white text-brand-primary border border-slate-300 font-bold rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-network-wired"></i> Portfolio Proyek
+                        </a>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="mt-12 grid grid-cols-3 gap-6 border-t border-slate-300 pt-8">
+                        <div>
+                            <div class="text-3xl font-bold text-brand-dark">14+</div>
+                            <div class="text-sm text-slate-500 font-bold uppercase tracking-wide">Tahun Pengalaman</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-brand-dark">IDR 200Jt</div>
+                            <div class="text-sm text-slate-500 font-bold uppercase tracking-wide">Annual Saving</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-brand-dark">25+</div>
+                            <div class="text-sm text-slate-500 font-bold uppercase tracking-wide">Tim Dipimpin</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative lg:h-[600px] flex items-center justify-center animate-slide-up" style="animation-delay: 0.2s">
+                    <!-- Profile Card Logistics Style -->
+                    <div class="relative w-80 h-[450px] bg-white rounded-2xl shadow-2xl p-3 border border-slate-200 rotate-2 hover:rotate-0 transition-transform duration-500 z-10 group">
+                        <div class="w-full h-full rounded-xl overflow-hidden relative">
+                             <img id="profile-img" src="https://media.licdn.com/dms/image/v2/C5603AQGdBKR7gsA_MQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1621503632013?e=1768435200&v=beta&t=x1hO0IY3_fPr8nApebY3YNIipBxMT4c808of7h9yKlM" alt="Abi Habudin Profile" class="object-cover w-full h-full filter brightness-105 group-hover:scale-105 transition-transform duration-700">
+                             <!-- Overlay Gradient -->
+                             <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent flex flex-col justify-end p-6">
+                                 <div class="border-l-4 border-brand-highlight pl-3">
+                                     <h3 class="text-white font-bold text-xl leading-none mb-1">Abi Habudin</h3>
+                                     <p class="text-slate-300 text-xs font-medium uppercase tracking-wider">Supply Chain Expert</p>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                    <!-- Decorative Elements -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[115%] h-[115%] border-2 border-dashed border-brand-accent/30 rounded-full animate-spin" style="animation-duration: 40s"></div>
+                    
+                    <!-- Floating Badge -->
+                    <div class="absolute top-20 -right-4 bg-white p-4 rounded-lg shadow-xl border border-slate-100 z-20 animate-float">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-brand-primary text-xl">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-slate-500 font-bold uppercase">Warehouse Efficiency</div>
+                                <div class="font-bold text-brand-dark text-lg">Optimal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="py-20 bg-white relative border-y border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
+                    <div>
+                        <span class="text-brand-accent font-bold tracking-widest text-xs uppercase bg-blue-50 px-3 py-1 rounded-full">Performance Metrics</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mt-4">Analitik Pencapaian</h2>
+                        <p class="text-slate-600 mt-3 max-w-2xl">Visualisasi dampak efisiensi biaya dan optimasi operasional dari berbagai proyek strategis.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Chart 1: Cost Savings -->
+                    <div class="p-8 bg-white rounded-2xl shadow-lg border border-slate-100 hover:shadow-xl transition-shadow relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-brand-surface rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-8">
+                                <div>
+                                    <h3 class="text-lg font-bold text-brand-dark flex items-center gap-2">
+                                        <i class="fas fa-chart-line text-brand-accent"></i> Cost Savings (IDR)
+                                    </h3>
+                                </div>
+                                <div class="px-3 py-1 bg-green-100 text-green-700 rounded-md text-xs font-bold border border-green-200">
+                                    Total Impact: ~700 Juta
+                                </div>
+                            </div>
+                            <div class="h-72">
+                                <canvas id="savingChart"></canvas>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-6 text-center italic border-t border-slate-100 pt-3">
+                                *Data kumulatif dari inisiatif pengurangan stok usang, sistem tracking, dan optimasi rute.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Skills Radar -->
+                    <div class="p-8 bg-brand-dark text-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden flex flex-col justify-center">
+                        <!-- Decorative bg -->
+                        <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-brand-primary/20 to-transparent"></div>
+                        
+                        <div class="relative z-10 w-full">
+                            <h3 class="text-lg font-bold mb-6 text-center flex items-center justify-center gap-2">
+                                <i class="fas fa-radar text-brand-highlight"></i> Kompetensi Inti
+                            </h3>
+                            <div class="h-72 flex items-center justify-center">
+                                <canvas id="skillChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    <!-- KPI 1 -->
+                    <div class="group p-6 bg-slate-50 rounded-xl border border-slate-200 text-center hover:bg-white hover:border-brand-accent hover:shadow-lg transition-all duration-300">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-truck text-brand-accent text-xl"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-brand-dark mb-1">15%</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Transport Cost Cut</div>
+                    </div>
+                    <!-- KPI 2 -->
+                    <div class="group p-6 bg-slate-50 rounded-xl border border-slate-200 text-center hover:bg-white hover:border-brand-accent hover:shadow-lg transition-all duration-300">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-boxes-stacked text-brand-accent text-xl"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-brand-dark mb-1">30%</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Storage Capacity Inc.</div>
+                    </div>
+                    <!-- KPI 3 -->
+                    <div class="group p-6 bg-slate-50 rounded-xl border border-slate-200 text-center hover:bg-white hover:border-brand-accent hover:shadow-lg transition-all duration-300">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-stopwatch text-brand-accent text-xl"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-brand-dark mb-1">25%</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Handling Time Reduced</div>
+                    </div>
+                    <!-- KPI 4 -->
+                    <div class="group p-6 bg-slate-50 rounded-xl border border-slate-200 text-center hover:bg-white hover:border-brand-accent hover:shadow-lg transition-all duration-300">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-shield-alt text-brand-accent text-xl"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-brand-dark mb-1">40%</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Inventory Loss Reduced</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Demo Section -->
+        <section id="system-demo" class="py-20 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-brand-accent uppercase bg-white border border-brand-accent/20 rounded-full shadow-sm">
+                        <i class="fas fa-laptop-code"></i>
+                        <span>Digital Innovation</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mt-2">Live Demo: Sistem Inventory MySCM</h2>
+                    <p class="text-slate-600 mt-4 max-w-3xl mx-auto">
+                        Inisiatif mandiri dalam mengembangkan solusi digital untuk menjawab tantangan administrasi gudang. Sistem ini mengotomatisasi pencatatan, mengurangi beban kerja manual hingga 50%, dan memberikan visibilitas stok real-time.
+                    </p>
+                </div>
+
+                <!-- Browser Frame Mockup -->
+                <div class="relative rounded-xl overflow-hidden shadow-2xl border border-slate-300 bg-slate-800">
+                    <!-- Browser Toolbar -->
+                    <div class="bg-slate-800 flex items-center px-4 py-3 space-x-2 border-b border-slate-700">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors"></div>
+                        </div>
+                        <div class="ml-4 flex-1 bg-slate-900/50 rounded-md h-8 text-xs text-slate-400 flex items-center px-3 font-mono overflow-hidden border border-slate-700">
+                            <i class="fas fa-lock mr-2 text-green-500"></i>
+                            <span class="truncate">https://myscm-app.github.io/mainscm/</span>
+                        </div>
+                        <div class="flex space-x-3 text-slate-400">
+                            <i class="fas fa-sync-alt hover:text-white cursor-pointer transition-colors text-xs"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Iframe Container -->
+                    <div class="bg-white w-full h-[600px] relative">
+                         <iframe 
+                            src="https://myscm-app.github.io/mainscm/" 
+                            class="w-full h-full border-0" 
+                            title="MySCM Inventory System Demo"
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center flex justify-center gap-4 flex-wrap">
+                    <a href="https://myscm-app.github.io/mainscm/" target="_blank" class="inline-flex items-center gap-2 px-8 py-3 bg-brand-primary text-white font-bold rounded-lg hover:bg-brand-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        <i class="fas fa-external-link-alt"></i> Buka Layar Penuh
+                    </a>
+                    <a href="#contact" class="inline-flex items-center gap-2 px-8 py-3 bg-white text-brand-primary border border-slate-300 font-bold rounded-lg hover:bg-slate-50 transition-all shadow-sm">
+                        <i class="fas fa-comment-dots"></i> Diskusi Tentang Sistem Ini
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Showcase Section -->
+        <section id="video-showcase" class="py-20 bg-white border-b border-slate-200 relative overflow-hidden">
+            <!-- Decorative bg -->
+            <div class="absolute inset-0 bg-logistics-pattern opacity-50 z-0"></div>
+
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-brand-primary uppercase bg-white border border-brand-primary/10 rounded-full shadow-sm">
+                    <i class="fas fa-play-circle text-brand-highlight"></i>
+                    <span>Bukti Visual</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Video Pencapaian</h2>
+                <p class="text-slate-600 mb-10 max-w-2xl mx-auto">
+                    Dokumentasi visual implementasi sistem, transformasi operasional, dan ringkasan pencapaian yang telah saya pimpin.
+                </p>
+                
+                <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-brand-dark border-4 border-white ring-1 ring-slate-200 group" style="padding-top: 56.25%;"> <!-- 16:9 Aspect Ratio -->
+                    <iframe 
+                        src="https://drive.google.com/file/d/1uOpD0o901fWEYRpKXc1TlYWnrbSjsAKA/preview" 
+                        class="absolute inset-0 w-full h-full" 
+                        allow="autoplay; fullscreen"
+                        title="Video Pencapaian Abi Habudin">
+                    </iframe>
+                </div>
+                <p class="text-slate-500 mt-6 text-sm italic">
+                    <i class="fas fa-info-circle mr-1"></i> Video ini menampilkan ringkasan pencapaian dan proses implementasi di lapangan.
+                </p>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 bg-brand-surface">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                    <div>
+                        <span class="text-brand-accent font-bold tracking-widest text-xs uppercase">Portfolio & Initiatives</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mt-2">Strategic Projects</h2>
+                        <p class="text-slate-600 mt-4 max-w-xl">Implementasi solusi logistik fisik dan digital untuk efisiensi operasional. Klik proyek untuk melihat detail lengkap.</p>
+                    </div>
+                </div>
+                
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Projects injected here via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact / CTA Section -->
+        <section id="contact" class="py-20 bg-white">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-brand-dark rounded-2xl shadow-2xl overflow-hidden relative">
+                    <!-- Decorative Elements -->
+                    <div class="absolute top-0 right-0 w-80 h-full bg-brand-primary/30 skew-x-12 transform translate-x-20"></div>
+                    <div class="absolute bottom-0 left-0 w-40 h-40 bg-brand-highlight/10 rounded-full blur-3xl"></div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 p-12 relative z-10 items-center">
+                        <div class="text-white">
+                            <h2 class="text-3xl font-bold mb-4">Siap Mengoptimalkan Supply Chain Anda?</h2>
+                            <p class="text-slate-300 mb-8 leading-relaxed">
+                                Dengan pengalaman 14 tahun, saya siap memimpin transformasi logistik perusahaan Anda menuju efisiensi maksimal dan pengurangan biaya yang terukur.
+                            </p>
+                            <div class="space-y-5">
+                                <div class="flex items-center gap-4 group cursor-pointer">
+                                    <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-brand-accent group-hover:border-transparent transition-colors">
+                                        <i class="fas fa-phone text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400 uppercase font-bold">Telepon / WhatsApp</div>
+                                        <span id="contact-phone" class="font-medium text-lg">+62 857 1705 0604</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 group cursor-pointer" onclick="window.open('https://www.linkedin.com/in/abi-habudin', '_blank')">
+                                    <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-brand-accent group-hover:border-transparent transition-colors">
+                                        <i class="fab fa-linkedin text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400 uppercase font-bold">LinkedIn</div>
+                                        <span class="font-medium text-lg">linkedin.com/in/abi-habudin</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-8 rounded-xl shadow-lg">
+                            <form onsubmit="event.preventDefault(); window.open('https://wa.me/6285717050604?text=Halo%20Pak%20Abi,%20saya%20tertarik%20mendiskusikan%20posisi%20Managerial%20di%20perusahaan%20kami.', '_blank');">
+                                <div class="flex items-center gap-2 mb-6 text-brand-dark">
+                                    <i class="fab fa-whatsapp text-2xl text-green-500"></i>
+                                    <h3 class="text-lg font-bold">Hubungi Cepat</h3>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama / Perusahaan</label>
+                                        <input type="text" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-primary outline-none transition" placeholder="PT Logistik Indonesia">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Pesan</label>
+                                        <textarea rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-primary outline-none transition" placeholder="Kami ingin mendiskusikan peluang..."></textarea>
+                                    </div>
+                                    <button class="w-full py-3 bg-brand-primary text-white font-bold rounded-lg hover:bg-brand-dark transition-colors shadow-lg hover:shadow-xl flex justify-center items-center gap-2">
+                                        <span>Kirim Pesan WhatsApp</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-slate-200 py-8 mt-12">
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <div class="flex justify-center items-center gap-2 mb-4 text-brand-primary text-2xl">
+                    <i class="fas fa-dolly-flatbed"></i>
+                </div>
+                <p class="text-slate-500 text-sm font-medium">
+                    &copy; <span id="year"></span> Abi Habudin. Supply Chain & Logistics Professional.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        const cvData = {
+            name: "Abi Habudin",
+            role: "Supply Chain & Logistics Expert",
+            image: "https://media.licdn.com/dms/image/v2/C5603AQGdBKR7gsA_MQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1621503632013?e=1768435200&v=beta&t=x1hO0IY3_fPr8nApebY3YNIipBxMT4c808of7h9yKlM",
+            phone: "+62 857 1705 0604",
+            projects: [
+                {
+                    title: "Sistem Inventory MySCM",
+                    category: "Digital Transformation",
+                    image: "https://images.unsplash.com/photo-1580674684081-7617fbf3d745?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    description: "Aplikasi berbasis web untuk otomatisasi stok gudang real-time, mengurangi input manual administrasi hingga 50%.",
+                    link: "https://myscm-app.github.io/mainscm/",
+                    // Detail Data untuk Modal
+                    details: {
+                        challenge: "Proses pencatatan stok yang manual menggunakan kertas menyebabkan ketidakakuratan data hingga 20%, keterlambatan laporan stok, dan tingginya beban administrasi.",
+                        solution: "Mengembangkan aplikasi web MySCM secara mandiri yang memungkinkan input data real-time, dashboard monitoring otomatis, dan fitur export laporan instan.",
+                        results: [
+                            "Meningkatkan akurasi stok hingga 99.5%.",
+                            "Mengurangi waktu administrasi harian sebesar 50%.",
+                            "Visibilitas stok real-time untuk pengambilan keputusan cepat."
+                        ]
+                    }
+                },
+                {
+                    title: "Sistem EPOD & Monitoring Tambang",
+                    category: "Logistics Tech",
+                    // Menggunakan video dari Google Drive pada bagian "video"
+                    video: "https://drive.google.com/file/d/1u3SgxfIblXFmCb-M-hQ4onn9XLvEO2kl/preview",
+                    image: "https://images.unsplash.com/photo-1616432043562-3671ea2e5242?q=80&w=800&auto=format&fit=crop",
+                    description: "Implementasi Electronic Proof of Delivery (EPOD) untuk monitoring kiriman material trading dari tambang ke customer secara real-time.",
+                    link: "#", // Akan memicu modal
+                    details: {
+                        challenge: "Sulitnya memantau pergerakan truk material dari tambang ke customer, risiko kehilangan material di jalan, dan keterlambatan konfirmasi pengiriman (POD) fisik yang menghambat penagihan.",
+                        solution: "Implementasi sistem EPOD berbasis mobile untuk supir dan dashboard monitoring pusat. Fitur mencakup GPS tracking, bukti foto digital saat bongkar muat, dan tanda tangan digital.",
+                        results: [
+                            "Real-time tracking status pengiriman 100% armada.",
+                            "Mempercepat proses invoicing dari 7 hari menjadi 1 hari (Same-day POD).",
+                            "Mengurangi sengketa (dispute) kuantitas material dengan bukti foto digital."
+                        ]
+                    }
+                },
+                {
+                    title: "Optimasi Rute Distribusi",
+                    category: "Cost Saving (2024)",
+                    image: "https://images.unsplash.com/photo-1566576912902-199df136d62b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    description: "Strategi manajemen armada dan rute yang berhasil memangkas biaya transportasi sebesar IDR 200 Juta/Tahun.",
+                    link: "#",
+                    details: {
+                        challenge: "Biaya transportasi yang membengkak akibat rute yang tidak efisien, penggunaan BBM yang boros, dan utilisasi armada yang rendah (banyak waktu idle).",
+                        solution: "Analisis data historis pengiriman untuk merancang rute optimal (Route Planning), konsolidasi pengiriman untuk memaksimalkan kapasitas truk (Load Factor), dan monitoring KPI driver.",
+                        results: [
+                            "Penghematan biaya operasional logistik sebesar IDR 200 Juta per tahun (15%).",
+                            "Meningkatkan On-Time Delivery (OTD) ke customer hingga 98%.",
+                            "Efisiensi penggunaan BBM armada sebesar 10%."
+                        ]
+                    }
+                },
+                {
+                    title: "Otomatisasi Gudang HHP",
+                    category: "Warehouse Design",
+                    image: "https://images.unsplash.com/photo-1553413077-190dd305871c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    description: "Redesain layout gudang dan implementasi barcode tracking untuk meminimalisir handling time hingga 25%.",
+                    link: "#",
+                    details: {
+                        challenge: "Layout gudang yang semrawut menyebabkan waktu pengambilan barang (picking time) lama, sering terjadi kesalahan pengambilan barang, dan produktivitas tim gudang rendah.",
+                        solution: "Redesain layout gudang menggunakan analisis ABC (Fast/Slow Moving), implementasi sistem barcode scanning untuk inbound/outbound, dan standarisasi alur kerja (SOP).",
+                        results: [
+                            "Mengurangi handling time material sebesar 25%.",
+                            "Meningkatkan produktivitas tim gudang sebesar 20%.",
+                            "Menurunkan tingkat kesalahan pengambilan (picking error) mendekati 0%."
+                        ]
+                    }
+                }
+            ]
+        };
+
+        // Modal Functions
+        function openModal(index) {
+            const project = cvData.projects[index];
+            if (!project.details) return; 
+
+            // Elements
+            const modalImage = document.getElementById('modal-image');
+            const modalVideo = document.getElementById('modal-video');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const videoTitleBlock = document.getElementById('modal-video-title-block');
+            
+            // Text Elements
+            document.getElementById('modal-category').textContent = project.category;
+            document.getElementById('modal-title').textContent = project.title;
+            document.getElementById('modal-challenge').textContent = project.details.challenge;
+            document.getElementById('modal-solution').textContent = project.details.solution;
+
+            // Reset Display State
+            modalImage.classList.add('hidden');
+            modalVideo.classList.add('hidden');
+            modalOverlay.classList.remove('hidden'); // Default show overlay for image
+            videoTitleBlock.classList.add('hidden'); // Default hide right-side title
+
+            // Check if Project has Video
+            if (project.video) {
+                // Video Mode
+                modalVideo.src = project.video;
+                modalVideo.classList.remove('hidden');
+                modalOverlay.classList.add('hidden'); // Hide overlay so video controls are accessible
+                
+                // Show Title in Right Column instead
+                videoTitleBlock.classList.remove('hidden');
+                document.getElementById('modal-video-category').textContent = project.category;
+                document.getElementById('modal-video-title').textContent = project.title;
+            } else {
+                // Image Mode
+                modalImage.src = project.image;
+                modalImage.classList.remove('hidden');
+                modalVideo.src = ""; // Stop video if any
+            }
+            
+            // Populate Results List
+            const resultsList = document.getElementById('modal-results');
+            resultsList.innerHTML = ''; 
+            project.details.results.forEach(result => {
+                const li = document.createElement('li');
+                li.className = 'text-sm text-slate-700 flex items-start gap-2';
+                li.innerHTML = `<i class="fas fa-check-circle text-green-500 mt-1 shrink-0"></i> <span>${result}</span>`;
+                resultsList.appendChild(li);
+            });
+
+            // Button Link
+            const linkBtn = document.getElementById('modal-link');
+            if (project.link && project.link !== "#") {
+                linkBtn.href = project.link;
+                linkBtn.innerHTML = '<i class="fas fa-external-link-alt mr-2"></i> Lihat Live / Demo';
+                linkBtn.classList.remove('bg-slate-400', 'cursor-not-allowed');
+                linkBtn.classList.add('bg-brand-primary', 'hover:bg-brand-dark');
+            } else {
+                linkBtn.href = "#";
+                linkBtn.innerHTML = '<i class="fas fa-lock mr-2"></i> Demo Internal (Restricted)';
+                linkBtn.classList.add('bg-slate-400', 'cursor-not-allowed');
+                linkBtn.classList.remove('bg-brand-primary', 'hover:bg-brand-dark');
+            }
+
+            // Show Modal with Animation
+            const modal = document.getElementById('project-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+            const panel = document.getElementById('modal-panel');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('opacity-0', 'translate-y-4');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('project-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+            const panel = document.getElementById('modal-panel');
+            const modalVideo = document.getElementById('modal-video');
+
+            backdrop.classList.add('opacity-0');
+            panel.classList.add('opacity-0', 'translate-y-4');
+
+            // Stop video playback on close
+            setTimeout(() => {
+                modalVideo.src = ""; 
+                modal.classList.add('hidden');
+            }, 300); 
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('project-modal').addEventListener('click', function(e) {
+            if (e.target === this || e.target.id === 'modal-backdrop') {
+                closeModal();
+            }
+        });
+
+        // Initialize Charts
+        function initCharts() {
+            // Chart 1: Cost Savings (Bar Chart)
+            const ctxSaving = document.getElementById('savingChart').getContext('2d');
+            new Chart(ctxSaving, {
+                type: 'bar',
+                data: {
+                    labels: ['Obsolete (2017)', 'Tracking (2018)', 'Storage (2022)', 'Transport (2024)'],
+                    datasets: [{
+                        label: 'Penghematan (Juta IDR)',
+                        data: [300, 100, 100, 200],
+                        backgroundColor: [
+                            'rgba(2, 132, 199, 0.8)', // Sky 600
+                            'rgba(12, 74, 110, 0.8)', // Sky 900
+                            'rgba(2, 132, 199, 0.8)',
+                            'rgba(12, 74, 110, 0.8)'
+                        ],
+                        borderRadius: 6,
+                        borderWidth: 0,
+                        barThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Skills (Radar Chart)
+            const ctxSkill = document.getElementById('skillChart').getContext('2d');
+            new Chart(ctxSkill, {
+                type: 'radar',
+                data: {
+                    labels: ['SAP ERP', 'WMS', 'Leadership', 'Cost Saving', 'Data Analysis', 'ISO 9001'],
+                    datasets: [{
+                        label: 'Keahlian',
+                        data: [90, 95, 85, 95, 80, 85],
+                        backgroundColor: 'rgba(2, 132, 199, 0.25)',
+                        borderColor: '#0284c7',
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#0c4a6e',
+                        pointHoverBackgroundColor: '#0c4a6e',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { 
+                                color: '#e0f2fe', 
+                                font: {
+                                    size: 12, 
+                                    family: "'Plus Jakarta Sans', sans-serif",
+                                    weight: 'bold'
+                                } 
+                            },
+                            ticks: { display: false, backdropColor: 'transparent' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        async function loadPortfolio() {
+            const loader = document.getElementById('loader');
+            const app = document.getElementById('app');
+            
+            renderData(cvData);
+            initCharts(); 
+
+            setTimeout(() => {
+                loader.classList.add('opacity-0');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    app.classList.remove('hidden');
+                    setTimeout(() => app.classList.remove('opacity-0'), 50);
+                }, 500);
+            }, 800);
+        }
+
+        function renderData(data) {
+            safeSetText('nav-name', data.name);
+            safeSetText('contact-phone', data.phone || "");
+            document.getElementById('year').textContent = new Date().getFullYear();
+            
+            // Explicitly set Image URL again to be sure
+            const profileImg = document.getElementById('profile-img');
+            if(profileImg) profileImg.src = data.image;
+
+            // Projects
+            const projectsGrid = document.getElementById('projects-grid');
+            if (projectsGrid) {
+                projectsGrid.innerHTML = '';
+                if (data.projects && Array.isArray(data.projects)) {
+                    data.projects.forEach((project, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'glass-card rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col h-full bg-white cursor-pointer';
+                        
+                        // Menambahkan event listener click untuk membuka modal
+                        card.onclick = () => openModal(index);
+
+                        card.innerHTML = `
+                            <div class="h-56 overflow-hidden relative">
+                                <img src="${project.image}" alt="${project.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-brand-primary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                    <span class="px-6 py-2 bg-white text-brand-primary font-bold rounded-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
+                                        Lihat Detail
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-[10px] font-bold text-brand-accent uppercase tracking-wider bg-sky-50 px-2 py-1 rounded border border-sky-100">${project.category}</span>
+                                    <i class="fas fa-arrow-right text-slate-300 group-hover:text-brand-highlight transition-colors"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-brand-dark mb-3 group-hover:text-brand-primary transition-colors">${project.title}</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed flex-grow">
+                                    ${project.description}
+                                </p>
+                            </div>
+                        `;
+                        projectsGrid.appendChild(card);
+                    });
+                }
+            }
+        }
+
+        function safeSetText(id, text) {
+            const el = document.getElementById(id);
+            if (el && text) el.textContent = text;
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        window.addEventListener('load', loadPortfolio);
+    </script>
+</body>
+</html>
